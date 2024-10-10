@@ -1,5 +1,5 @@
 
-from django.db.models import CharField, CASCADE, TextField, ImageField, Model, ForeignKey, JSONField
+from django.db.models import CharField, CASCADE, TextField, ImageField, Model, ForeignKey, JSONField, IntegerField
 from mptt.models import MPTTModel, TreeForeignKey
 
 from shared.models import TimeBasedModel
@@ -25,3 +25,14 @@ class Book(TimeBasedModel):
     image = ImageField(upload_to='shops/book/image', null=True, blank=True)
     overview = TextField()
     features = JSONField()
+
+
+class Wishlist(TimeBasedModel):
+    book = ForeignKey('shops.Book', CASCADE, null=True, blank=True, related_name='wishlists')
+    user = ForeignKey('users.User', CASCADE, null=True, blank=True, related_name='wishlists')
+
+
+class Card(TimeBasedModel):
+    book = ForeignKey('shops.Book', CASCADE, null=True, blank=True, related_name='cards')
+    user = ForeignKey('users.User', CASCADE, null=True, blank=True, related_name='cards')
+    quantity = IntegerField(default=0)
