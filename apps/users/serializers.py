@@ -5,10 +5,17 @@ from rest_framework.serializers import ModelSerializer
 from users.models import User
 
 
-class UserSerializer(ModelSerializer):
+class UserModelSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = 'first_name', 'email'
+        fields = '__all__'
+
+
+
+class UserUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = 'first_name', 'last_name', 'email'
 
 
 class RegisterSerializer(ModelSerializer):
@@ -29,4 +36,10 @@ class RegisterSerializer(ModelSerializer):
             raise ValidationError('Passwords do not match!')
         return data
 
+    # def validate(self, attrs):
+    #     confirm_password = attrs.pop('confirm_password')
+    #     if confirm_password != attrs.get('password'):
+    #         raise ValidationError('Passwords did not match!')
+    #     attrs['password'] = make_password(confirm_password)
+    #     return attrs
 
