@@ -5,4 +5,6 @@ register  -> finished
 UserProfileUpdate -> finished
 jwt token -> finished
 models -> finished
+country fixture -> finished
+
 login -> processing
