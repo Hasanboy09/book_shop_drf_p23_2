@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
@@ -29,17 +30,30 @@ class RegisterSerializer(ModelSerializer):
             'confirm_password': {'write_only': True}
         }
 
-    def validate(self, data):
-        confirm_password = data.get('confirm_password')
-        password = data.get('password')
-        if confirm_password != password:
-            raise ValidationError('Passwords do not match!')
-        return data
+    # def validate(self, data):
+    #     confirm_password = data.get('confirm_password')
+    #     password = data.get('password')
+    #     if confirm_password != password:
+    #         raise ValidationError('Passwords do not match!')
+    #     return data
 
-    # def validate(self, attrs):
-    #     confirm_password = attrs.pop('confirm_password')
-    #     if confirm_password != attrs.get('password'):
-    #         raise ValidationError('Passwords did not match!')
-    #     attrs['password'] = make_password(confirm_password)
-    #     return attrs
+    def validate(self, attrs):
+        confirm_password = attrs.pop('confirm_password')
+        if confirm_password != attrs.get('password'):
+            raise ValidationError('Passwords did not match!')
+        attrs['password'] = make_password(confirm_password)
+        return attrs
+
+
+class LoginSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = 'email', 'password'
+
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+
 

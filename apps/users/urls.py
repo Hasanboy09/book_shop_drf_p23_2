@@ -13,6 +13,7 @@ urlpatterns = [
 
 
     path('registr/', RegisterCreateAPIView.as_view(), name='register'),
+    path('' , )
 
 ]
 
