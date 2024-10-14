@@ -1,8 +1,6 @@
-from django.shortcuts import render
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
 
 from shops.models import Country, Address
 from shops.serializers import CountrySerializer, AddressSerializer
@@ -31,3 +29,7 @@ class AddressListView(ListAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
     permission_classes = IsAuthenticated
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
