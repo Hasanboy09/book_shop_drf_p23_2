@@ -24,11 +24,12 @@ class CountryListView(ListAPIView):
     serializer_class = CountrySerializer
 
 
+
 @extend_schema(tags=["address"])
 class AddressListView(ListAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = IsAuthenticated
+    permission_classes = [IsAuthenticated,]
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)

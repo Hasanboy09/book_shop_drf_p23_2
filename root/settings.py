@@ -122,3 +122,5 @@ MEDIA_ROOT = join(BASE_DIR / 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 from root.drf_settings import *
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6380/0'
