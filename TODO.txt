@@ -7,6 +7,6 @@ jwt token -> finished
 models -> finished
 country fixture -> finished
 
-login -> processing
+login ->  finished
 
 
