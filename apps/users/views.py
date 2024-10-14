@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from shops.models import Country
 from users.models import User
 from users.serializers import UserModelSerializer, RegisterSerializer, LoginSerializer
 
@@ -39,7 +40,18 @@ class LoginAPIView(APIView):
     serializer_class = LoginSerializer
     authentication_classes = [TokenAuthentication]
 
-    # def post(self, request):
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({'message': 'Login successful'}, status=200)
+        else:
+            return JsonResponse({'error': 'Invalid email or password'}, status=400)
+
+ # def post(self, request):
     #     serializer = LoginSerializer(data=request.data)
     #     if serializer.is_valid(raise_exception=True):
     #         user = authenticate(username=serializer.data['email'], password=serializer.data['password'])
@@ -48,16 +60,10 @@ class LoginAPIView(APIView):
     #             return Response({'token': [token.key], "Sucsses": "Login SucssesFully"},
     #                             status=status.HTTP_201_CREATED)
     #         return Response({'Massage': 'Invalid Username and Password'}, status=401)
-    def post(self, request):
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({'message': 'Login successful'}, status=200)
-        else:
-            return JsonResponse({'error': 'Invalid email or password'}, status=400)
-
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     pass
+
+
+
+

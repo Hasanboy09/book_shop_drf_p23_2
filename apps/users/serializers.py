@@ -61,3 +61,9 @@ class LoginSerializer(ModelSerializer):
 
         data['user'] = user
         return data
+
+
+class WishlistSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = 'wishlist'

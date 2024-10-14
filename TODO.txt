@@ -1,3 +1,15 @@
+1. book, author, cart, wishlist modellari 🆗
+2. jwt o'rnatish 🆗
+
+3. login, register apilari deyarli 🆗
+3.1 adminkaga email orqali kirish 🆗
+3.2 celery orqali ishlatish
+3.3 register one-time link -> hash(user.id+user.is_active) -> mana shunaqa token qilish kerak
+3.4 premium userlarga ertaroq emailiga xabar borishi kerak [celery]
+3.5 admin@gmail.com -> bolsa admin desak kirib ketishi kerak 🆗
+4. user o'zini malumotlarini update qilish apisi
+5. wishlist apilari 🆗
+
 
 
 
@@ -6,7 +18,16 @@ UserProfileUpdate -> finished
 jwt token -> finished
 models -> finished
 country fixture -> finished
-
+country api -> finished
 login ->  finished
+admin@gmail.com -> bolsa admin desak kirib ketishi kerak    -> finished
+address api -> finished
+
+
+
+
+
+
+
 
 
