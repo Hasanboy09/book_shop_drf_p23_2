@@ -9,3 +9,6 @@ user:
 
 celery:
 	celery -A root worker -l INFO
+
+loaddata:
+	python manage.py loaddata country

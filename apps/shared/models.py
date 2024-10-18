@@ -1,4 +1,3 @@
-
 from django.db.models import Model, DateTimeField, CharField, BooleanField
 from django.utils.text import slugify
 

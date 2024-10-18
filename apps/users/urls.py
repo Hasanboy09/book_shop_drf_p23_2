@@ -1,17 +1,18 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView
 
-from users.views import UserUpdateView, CustomTokenObtainPairView, UserListAPIView, RegisterCreateAPIView, LoginAPIView
+from users.views import AddressListCreateAPIView, RegisterCreateAPIView, LoginAPIView, UserActivateAPIView, \
+    AddressDestroyUpdateAPIView, UserUpdateAPIView
 
 urlpatterns = [
-    path('login', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh-token', TokenRefreshView.as_view(), name='token_refresh'),
+    path('address', AddressListCreateAPIView.as_view(), name='address_list'),
+    path('address/<int:pk>', AddressDestroyUpdateAPIView.as_view(), name='address_detail'),
 
-    path('user-update/<int:pk>', UserUpdateView.as_view(), name='user_update'),
-    path('user-list/', UserListAPIView.as_view(), name='user-list'),
+    path('register', RegisterCreateAPIView.as_view(), name='register'),
+    path('login', LoginAPIView.as_view(), name='login'),
+    path('activate/<uidb64>/<token>', UserActivateAPIView.as_view(), name='activate_user'),
 
-    path('registr/', RegisterCreateAPIView.as_view(), name='register'),
-    path('login/', LoginAPIView.as_view(), name='login'),
-    # http://localhost:8002/api/v1/users/login/
+]
 
+urlpatterns +=[
+    path('user-update' , UserUpdateAPIView.as_view(), name='user_update'),
 ]
