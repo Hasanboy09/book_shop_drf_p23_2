@@ -32,3 +32,6 @@ address api -> finished
 
 
 
+
+faker da category  models 🙅‍♂️
+

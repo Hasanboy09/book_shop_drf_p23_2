@@ -29,7 +29,7 @@ class Book(TimeBasedModel):
     name = CharField(max_length=250)
     image = ImageField(upload_to='shops/book/image', null=True, blank=True)
     overview = TextField()
-    features = JSONField()
+    features = CharField(max_length=250)
     format = CharField(max_length=10, choices=Format.choices, default=Format.HARDCOVER)
     author = ForeignKey('shops.Author', CASCADE)
 

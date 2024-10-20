@@ -1,8 +1,9 @@
+from time import time
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, mixins
-from rest_framework.generics import ListCreateAPIView, UpdateAPIView, CreateAPIView, GenericAPIView, DestroyAPIView
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView, CreateAPIView, GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -72,14 +73,31 @@ class LoginAPIView(GenericAPIView):
 class UserActivateAPIView(APIView):
     authentication_classes = ()
 
+    # def get(self, request, uidb64, token):
+    #     try:
+    #         uid = urlsafe_base64_decode(uidb64).decode()
+    #         uid, is_active, _created_at = uid.split('/')
+    #         if int(time()) - int(_created_at) > 120:
+    #             raise AuthenticationFailed('Havolangiz muddati tugagan')
+    #         user = User.objects.get(pk=uid, is_active=is_active)
+    #     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+    #         user = None
+    #
+    #     if user and PasswordResetTokenGenerator().check_token(user, token):
+    #         user.is_active = True
+    #         user.save()
+    #         return Response({"message": "User successfully verified!"})
+    #     raise AuthenticationFailed('Havola yaroqsiz yoki muddati o‘tgan.')
+
     def get(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            uid, is_active = uid.split('/')
-            user = User.objects.get(pk=uid, is_active=is_active)
+            uid, _created_at = uid.split('/')
+            if int(time()) - int(_created_at) > 259200:
+                raise AuthenticationFailed('Havolangiz muddati tugagan')
+            user = User.objects.get(pk=uid, is_active=False)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-
         if user and PasswordResetTokenGenerator().check_token(user, token):
             user.is_active = True
             user.save()
