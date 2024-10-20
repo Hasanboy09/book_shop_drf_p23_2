@@ -33,5 +33,5 @@ address api -> finished
 
 
 
-faker da category  models 🙅‍♂️
+faker da category and book  models  ishlamadi 100 %🙅‍♂️
 

@@ -8,12 +8,12 @@ from django.core.management.base import BaseCommand
 from faker import Faker
 
 from shops.models import Author, Section, Category, Book, Review
-from users.models import User, Address, Country
+from users.models import User, Address, Country, Cart
 
 
 class Command(BaseCommand):
     help = "Closes the specified poll for voting"
-    model_list = {'user', 'author', 'address', 'section' ,'review'}
+    model_list = {'user', 'author', 'address', 'section' ,'review' , 'cart'}
 
     def __init__(self, stdout=None, stderr=None, no_color=False, force_color=False):
         self.f = Faker()
@@ -122,6 +122,23 @@ class Command(BaseCommand):
     #     Book.objects.bulk_create(book_list)
     #     self.stdout.write(self.style.SUCCESS(f"Book ma`lumotlar {count} qo`shildi"))
     #
+
+    def _cart(self,count):
+        cart_list = list()
+        for _ in range(count):
+            cart_list.append(Cart(
+                book_id=Book.objects.order_by("?").values_list('id', flat=True).first(),
+                user_id=User.objects.order_by("?").values_list('id', flat=True).first(),
+                quantity=self.f.numerify(),
+                format=self.f.text(),
+                condition=self.f.text(),
+                seller=self.f.name(),
+                ship_from=self.f.text(),
+            ))
+        Cart.objects.bulk_create(cart_list)
+        self.stdout.write(self.style.SUCCESS(f"Cart ma`lumotlari {count} tadan qo`shildi"))
+
+
 
 
     def handle(self, *args, **options):
