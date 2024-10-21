@@ -131,14 +131,23 @@ class AddressDestroyUpdateAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMi
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
-        if self._can_delete:  # true  bo`lsa o`chiradi
+        if self._can_delete:
             _user: User = request.user
-            if instance.id in (_user.billing_address_id,
-                               _user.shipping_address_id):  # o'chirilayotgan manzil foydalanuvchining billing yoki shipping manzili bo'lsa,
-                return Response({"message": "maxsus addresslar"})
-            if instance.id == _user.shipping_address_id:
-                return Response({"message": "Siz shipping manzilini o'chira olmaysiz!"})  # homework
+            if instance.id == _user.billing_address_id:
+                return Response({"message": "Siz default billing manzilni o'chira olmaysiz!"})
 
-            self.perform_destroy(instance)  # o`chiradi
+            if instance.id in (_user.billing_address_id, _user.shipping_address_id):
+                return Response({"message": "maxsus addresslar"})
+
+            self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({"message": "ozi 1ta qoldi!"})
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        _user: User = request.user
+
+        if instance.id == _user.billing_address_id:
+            return Response({"message": "Siz default billing manzilni tahrirlash imkoniga ega emassiz!"})
+
+        return super().update(request, *args, **kwargs)  # Agar default billing bo'lmasa, tahrirlashga ruxsat beriladi
