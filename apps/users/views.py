@@ -144,10 +144,12 @@ class AddressDestroyUpdateAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMi
         return Response({"message": "ozi 1ta qoldi!"})
 
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance = self.get_object() #  ma'lumotlar bazasidan olingan model obyektini # noqa
         _user: User = request.user
 
         if instance.id == _user.billing_address_id:
-            return Response({"message": "Siz default billing manzilni tahrirlash imkoniga ega emassiz!"})
+            return Response({"message": "You cannot update billing address!"})
 
-        return super().update(request, *args, **kwargs)  # Agar default billing bo'lmasa, tahrirlashga ruxsat beriladi
+        return super().update(request, *args, **kwargs)  # Agar default billing bo'lmasa, o`zgartirishga ruxsat beriladi
+
+
