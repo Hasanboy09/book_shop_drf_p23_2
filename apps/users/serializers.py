@@ -15,7 +15,7 @@ class CountryModelSerializer(ModelSerializer):
 
 
 class AddressListModelSerializer(ModelSerializer):
-    user = HiddenField(default=CurrentUserDefault()) # joriy user ni olish uchun
+    user = HiddenField(default=CurrentUserDefault())  # joriy user ni olish uchun
     postal_code = IntegerField(default=123400, min_value=0)
     has_shipping_address = BooleanField(write_only=True)
     has_billing_address = BooleanField(write_only=True)
@@ -30,6 +30,11 @@ class AddressListModelSerializer(ModelSerializer):
 
         _address = super().create(validated_data)
         _user: User = _address.user
+        if _user.address_set.count() < 2:
+            _user.billing_address = _address
+            _user.shipping_address = _address
+            _user.save()
+
         if _has_billing_address:
             _user.billing_address = _address
             _user.save()
@@ -72,14 +77,12 @@ class UserUpdateSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         if 'password' in validated_data:
             instance.set_password(validated_data['password'])
-            validated_data.pop('confirm_password', None) # olib tashlanadi , saqlash uchun kerak emas
+            validated_data.pop('confirm_password', None)  # olib tashlanadi , saqlash uchun kerak emas
 
         instance.email = validated_data.get('email', instance.email)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.save()
         return instance
-
-
 
 
 class RegisterUserModelSerializer(ModelSerializer):

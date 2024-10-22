@@ -13,7 +13,7 @@ from users.models import User, Address, Country, Cart
 
 class Command(BaseCommand):
     help = "Closes the specified poll for voting"
-    model_list = {'user', 'author', 'address', 'section' ,'review' , 'cart'}
+    model_list = {'user', 'author', 'address', 'section' ,'review' , 'cart' , 'book', 'category'}
 
     def __init__(self, stdout=None, stderr=None, no_color=False, force_color=False):
         self.f = Faker()
@@ -89,39 +89,43 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Review ma`lumotlari {count} tadan qo`shildi"))
 
 
-    # def _category(self, count):
-    #     category_list = []
-    #
-    #     parent_section = Section.objects.order_by("?").first()
-    #     parent_ = Category.objects.create(name=self.f.word(), section=parent_section)
-    #     categories = [parent_]
-    #     for _ in range(count):
-    #         parent_category = random.choice(categories)
-    #         section = Section.objects.order_by("?").first()
-    #         category_list.append(Category(
-    #             name=self.f.word(),
-    #             parent=parent_category,
-    #             section=section,
-    #         ))
-    #     Category.objects.bulk_create(category_list)
-    #     self.stdout.write(self.style.SUCCESS(f"Category ma`lumotlari {count} tadan qo`shildi"))
+    def _category(self, count):
+        category_list = []
 
-    # def _book(self, count):
-    #     book_list = list()
-    #     book_format = random.choice([Book.Format.HARDCOVER, Book.Format.PAPERBACK])
-    #
-    #     for _ in range(count):
-    #         book_list.append(Book(
-    #             name=self.f.name(),
-    #             image_url=self.f.file_extension(),
-    #             overview=self.f.text(),
-    #             features=self.f.json(),
-    #             format=book_format,
-    #             author_id=Author.objects.order_by('?').values_list('id', flat=True).first(),
-    #         ))
-    #     Book.objects.bulk_create(book_list)
-    #     self.stdout.write(self.style.SUCCESS(f"Book ma`lumotlar {count} qo`shildi"))
-    #
+        parent_section = Section.objects.order_by("?").first()
+        parent_ = Category.objects.create(name=self.f.word(), section=parent_section)
+        categories = [parent_]
+        for _ in range(count):
+            parent_category = random.choice(categories)
+            section = Section.objects.order_by("?").first()
+            category_list.append(Category(
+                name=self.f.word(),
+                parent=parent_category,
+                section=section,
+                lft=0,
+                rght=0,
+                level=0,
+                tree_id=0
+            ))
+        Category.objects.bulk_create(category_list)
+        self.stdout.write(self.style.SUCCESS(f"Category ma`lumotlari {count} tadan qo`shildi"))
+
+    def _book(self, count):
+        book_list = list()
+        book_format = random.choice([Book.Format.HARDCOVER, Book.Format.PAPERBACK])
+
+        for _ in range(count):
+            book_list.append(Book(
+                name=self.f.name(),
+                image=self.f.file_extension(),
+                overview=self.f.text(),
+                features=self.f.json(),
+                format=book_format,
+                author_id=Author.objects.order_by('?').values_list('id', flat=True).first(),
+            ))
+        Book.objects.bulk_create(book_list)
+        self.stdout.write(self.style.SUCCESS(f"Book ma`lumotlar {count} qo`shildi"))
+
 
     def _cart(self,count):
         cart_list = list()

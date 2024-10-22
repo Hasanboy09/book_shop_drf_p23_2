@@ -127,29 +127,19 @@ class AddressDestroyUpdateAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMi
         return qs
 
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        _user: User = request.user
+        instance = self.get_object()
+        if instance.pk == _user.billing_address_id:
+            return Response({"message": "O'zgartirib bo'lmaydi!"})
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if self._can_delete:
-            _user: User = request.user
-            if instance.id == _user.billing_address_id:
-                return Response({"message": "Siz default billing manzilni o'chira olmaysiz!"})
-
-            if instance.id in (_user.billing_address_id, _user.shipping_address_id):
-                return Response({"message": "maxsus addresslar"})
-
+        instance: Address = self.get_object()
+        _user: User = request.user
+        if self._can_delete and instance.id not in (_user.billing_address_id, _user.shipping_address_id):
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({"message": "ozi 1ta qoldi!"})
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object() #  ma'lumotlar bazasidan olingan model obyektini # noqa
-        _user: User = request.user
-
-        if instance.id == _user.billing_address_id:
-            return Response({"message": "You cannot update billing address!"})
-
-        return super().update(request, *args, **kwargs)  # Agar default billing bo'lmasa, o`zgartirishga ruxsat beriladi
-
-
+        return Response({"message": "O'chirib bo'lmaydi!"})

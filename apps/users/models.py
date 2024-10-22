@@ -6,7 +6,6 @@ from shared.models import TimeBasedModel
 from users.managers import CustomUserManager
 
 
-
 class User(AbstractUser):
     username = None
     first_name = None
@@ -48,6 +47,7 @@ class Address(Model):
 class Country(Model):
     name = CharField(max_length=255)
     code = CharField(max_length=255)
+
 
     def __str__(self):
         return self.name
