@@ -5,7 +5,7 @@ from rest_framework.fields import HiddenField, CurrentUserDefault, CharField, Em
 from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from users.models import User, Address, Country
+from users.models import User, Address, Country, LoginAttempt
 
 
 class CountryModelSerializer(ModelSerializer):
@@ -108,15 +108,49 @@ class LoginUserModelSerializer(Serializer):
     email = EmailField()
     password = CharField(write_only=True)
 
+    # def validate(self, attrs):
+    #     email = attrs.get('email')
+    #     password = attrs.get('password')
+    #     user = authenticate(username=email, password=password)
+    #     if user is None:
+    #         raise ValidationError("Invalid email or password")
+    #     attrs['user'] = user
+    #     return attrs
+    # ======================
+
+
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        user = authenticate(username=email, password=password)
-        if user is None:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise ValidationError("Invalid email or password")
+        login_attempt, created = LoginAttempt.objects.get_or_create(user=user)
+
+        # Foydalanuvchi bloklanganmi tekshirish
+        if login_attempt.is_blocked():
+            raise ValidationError("Foydalanuvchi 5 daqiqa bloklangan!")
+
+        # Foydalanuvchini autentifikatsiya qilish
+        user = authenticate(username=email, password=password)
+
+        if user is None:
+            # Noto'g'ri parol kiritilganida urinishlar sonini oshirish
+            login_attempt.increment_attempts()
+
+            if login_attempt.attempts >= 3:
+                # Foydalanuvchini 5 daqiqaga bloklash
+                login_attempt.block_for_five_minutes()
+                raise ValidationError("Siz 3 marta noto'g'ri kiritdingiz. 5 daqiqaga bloklandingiz!")
+
+            raise ValidationError("Invalid email or password")
+
+        # Urinishlar muvaffaqiyatli bo'lsa, urinishlarni qayta nollash
+        login_attempt.reset_attempts()
         attrs['user'] = user
         return attrs
-
+# ==========================
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

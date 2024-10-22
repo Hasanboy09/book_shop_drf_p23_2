@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
 from django.db.models import ManyToManyField, EmailField, BooleanField, ForeignKey, CASCADE, IntegerField, CharField, \
-    Model, OneToOneField, RESTRICT
+    Model, OneToOneField, RESTRICT, DateTimeField
+from django.utils import timezone
 
 from shared.models import TimeBasedModel
 from users.managers import CustomUserManager
@@ -51,3 +54,30 @@ class Country(Model):
 
     def __str__(self):
         return self.name
+
+
+
+# ==============================================================================
+class LoginAttempt(Model):
+    user = OneToOneField(User, on_delete=CASCADE)
+    attempts = IntegerField(default=0)
+    last_attempt_time = DateTimeField(null=True, blank=True)
+    blocked_until = DateTimeField(null=True, blank=True)
+
+    def block_for_five_minutes(self):
+        self.blocked_until = timezone.now() + timedelta(minutes=5)
+        self.save()
+
+    def reset_attempts(self):
+        self.attempts = 0
+        self.save()
+
+    def increment_attempts(self):
+        self.attempts += 1
+        self.last_attempt_time = timezone.now()
+        self.save()
+
+    def is_blocked(self):
+        if self.blocked_until and self.blocked_until > timezone.now():
+            return True
+        return False
