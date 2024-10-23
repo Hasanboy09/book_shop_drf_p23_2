@@ -4,6 +4,7 @@
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
+.idea
 [Ss]cripts
 pyvenv.cfg
 .venv
