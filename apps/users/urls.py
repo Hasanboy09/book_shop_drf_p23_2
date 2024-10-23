@@ -1,7 +1,7 @@
 from django.urls import path
 
 from users.views import AddressListCreateAPIView, RegisterCreateAPIView, LoginAPIView, UserActivateAPIView, \
-    AddressDestroyUpdateAPIView, UserUpdateAPIView, WishlistView
+    AddressDestroyUpdateAPIView, UserUpdateAPIView, UserWishlistCreateAPIViewDestroyAPIView
 
 urlpatterns = [
     path('address', AddressListCreateAPIView.as_view(), name='address_list'),
@@ -15,5 +15,5 @@ urlpatterns = [
 
 urlpatterns += [
     path('user-update', UserUpdateAPIView.as_view(), name='user_update'),
-    path('wishlist/' , WishlistView.as_view() , name='wishlist'),
+    path('wishlist/<int:pk>' , UserWishlistCreateAPIViewDestroyAPIView.as_view() , name='wishlist'),
 ]

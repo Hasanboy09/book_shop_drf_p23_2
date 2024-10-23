@@ -1,11 +1,11 @@
 from time import time
+
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, mixins
-from rest_framework.generics import ListCreateAPIView, UpdateAPIView, CreateAPIView, GenericAPIView, DestroyAPIView, \
-    RetrieveUpdateDestroyAPIView
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView, CreateAPIView, GenericAPIView, \
+    RetrieveUpdateDestroyAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,7 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.email_service import ActivationEmailService
 from users.models import User, Address
 from users.serializers import AddressListModelSerializer, UserUpdateSerializer, RegisterUserModelSerializer, \
-    LoginUserModelSerializer, WishlistSerializer
+    LoginUserModelSerializer, UserWishlist
 
 
 @extend_schema(tags=['user'])
@@ -142,6 +142,8 @@ class AddressDestroyUpdateAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMi
 
 
 @extend_schema(tags=['wishlist'])
-class WishlistView(RetrieveUpdateDestroyAPIView):
-    serializer_class = WishlistSerializer
+class UserWishlistCreateAPIViewDestroyAPIView(CreateAPIView, DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserWishlist
     permission_classes = IsAuthenticated,
+

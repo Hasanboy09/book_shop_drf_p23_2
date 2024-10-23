@@ -60,11 +60,6 @@ class AddressListModelSerializer(ModelSerializer):
         return repr
 
 
-class UserModelSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
-
 
 class UserUpdateSerializer(ModelSerializer):
     confirm_password = CharField(write_only=True, required=True)
@@ -115,15 +110,6 @@ class LoginUserModelSerializer(Serializer):
     email = EmailField()
     password = CharField(write_only=True)
 
-    # def validate(self, attrs):
-    #     email = attrs.get('email')
-    #     password = attrs.get('password')
-    #     user = authenticate(username=email, password=password)
-    #     if user is None:
-    #         raise ValidationError("Invalid email or password")
-    #     attrs['user'] = user
-    #     return attrs
-    # ======================
 
     def validate(self, attrs):
         email = attrs.get('email')
@@ -168,7 +154,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 
-class WishlistSerializer(ModelSerializer):
+class UserWishlist(ModelSerializer):
     class Meta:
         model = User
         fields = 'wishlist',
