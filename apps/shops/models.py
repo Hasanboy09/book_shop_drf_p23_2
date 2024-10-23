@@ -1,6 +1,6 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import CharField, CASCADE, TextField, ImageField, Model, ForeignKey, IntegerField, \
-    TextChoices, PositiveSmallIntegerField, DecimalField
+from django.db.models import CharField, CASCADE, TextField, ImageField, Model, ForeignKey, TextChoices, \
+    PositiveSmallIntegerField, DecimalField, ManyToManyField
 from django.utils.text import slugify
 from django_jsonform.models.fields import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
@@ -89,7 +89,7 @@ class Book(SlugTimeBasedModel):
     overview = TextField()
     features = JSONField(schema=SCHEMA)
     format = CharField(max_length=10, choices=Format.choices, default=Format.HARDCOVER)
-    author = ForeignKey('shops.Author', CASCADE)
+    author = ManyToManyField('shops.Author', related_name='books')
     category = ForeignKey('shops.Category', CASCADE, related_name='books')
 
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
