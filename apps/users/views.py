@@ -3,7 +3,9 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, mixins
-from rest_framework.generics import ListCreateAPIView, UpdateAPIView, CreateAPIView, GenericAPIView
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView, CreateAPIView, GenericAPIView, DestroyAPIView, \
+    RetrieveUpdateDestroyAPIView
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,7 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.email_service import ActivationEmailService
 from users.models import User, Address
 from users.serializers import AddressListModelSerializer, UserUpdateSerializer, RegisterUserModelSerializer, \
-    LoginUserModelSerializer
+    LoginUserModelSerializer, WishlistSerializer
 
 
 @extend_schema(tags=['user'])
@@ -24,14 +26,6 @@ class UserUpdateAPIView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
-
-
-#
-# @extend_schema(tags=['user'])
-# class UserWishlistCreateAPIViewDestroyAPIView(CreateAPIView, DestroyAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserWishlist
-#     permission_classes = IsAuthenticated,
 
 
 @extend_schema(tags=['auth'])
@@ -72,6 +66,7 @@ class LoginAPIView(GenericAPIView):
 @extend_schema(tags=['auth'])
 class UserActivateAPIView(APIView):
     authentication_classes = ()
+    serializer_class = None
 
     # def get(self, request, uidb64, token):
     #     try:
@@ -112,7 +107,7 @@ class AddressListCreateAPIView(ListCreateAPIView):
     permission_classes = IsAuthenticated,  # faqat login qilganlarga ruxsat beradi
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user).order_by('address')  # alifbo sort
 
 
 @extend_schema(tags=['shops'])
@@ -143,3 +138,9 @@ class AddressDestroyUpdateAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMi
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({"message": "O'chirib bo'lmaydi!"})
+
+
+@extend_schema(tags=['wishlist'])
+class WishlistView(RetrieveUpdateDestroyAPIView):
+    serializer_class = WishlistSerializer
+    permission_classes = IsAuthenticated,

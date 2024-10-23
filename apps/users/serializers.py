@@ -118,7 +118,6 @@ class LoginUserModelSerializer(Serializer):
     #     return attrs
     # ======================
 
-
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
@@ -150,6 +149,8 @@ class LoginUserModelSerializer(Serializer):
         login_attempt.reset_attempts()
         attrs['user'] = user
         return attrs
+
+
 # ==========================
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -158,3 +159,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['email'] = user.email
         return token
+
+
+class WishlistSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = 'wishlist',
