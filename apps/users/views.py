@@ -107,7 +107,8 @@ class AddressListCreateAPIView(ListCreateAPIView):
     permission_classes = IsAuthenticated,  # faqat login qilganlarga ruxsat beradi
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user).order_by('address')  # alifbo sort
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user).order_by('address')  # alifbo sort
 
 
 @extend_schema(tags=['shops'])

@@ -177,11 +177,11 @@ class Command(BaseCommand):
             features=self.f.json(),
             image=self.f.image_url(),
             format=self.f.random_element(elements=[Book.Format.HARDCOVER, Book.Format.PAPERBACK]),
-            # new_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
-            # used_good_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
-            # ebook_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
-            # audiobook_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
-            # reviews_count=self.f.random_int(min=0, max=100),
+            new_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
+            used_good_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
+            ebook_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
+            audiobook_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
+            reviews_count=self.f.random_int(min=0, max=100),
             author_id=Author.objects.order_by('?').values_list('id', flat=True).first(),
         )
 

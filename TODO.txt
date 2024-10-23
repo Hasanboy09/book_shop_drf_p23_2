@@ -62,3 +62,14 @@ Task
 6.6✅ default shipping no delete
 7. database backup docker based
 8. ✅ django custom admin
+
+
+
+==========================================
+
+currency
+user admin.py
+user utils.py
+drf_settings page
+pagination qo`shildi
+book modelida o`zgarish

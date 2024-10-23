@@ -5,7 +5,14 @@ from rest_framework.fields import HiddenField, CurrentUserDefault, CharField, Em
 from rest_framework.serializers import Serializer, ModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from shops.models import Author
 from users.models import User, Address, Country, LoginAttempt
+
+
+class AuthorModelSerializer(ModelSerializer):
+    class Meta:
+        model = Author
+        exclude = 'bio',
 
 
 class CountryModelSerializer(ModelSerializer):

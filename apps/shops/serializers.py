@@ -1,12 +1,15 @@
 from django.db.models import Avg
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
+
+from users.serializers import AuthorModelSerializer
 from .models import Book, Author, Review
 
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['id', 'name', 'bio']
+        fields = ['id', 'first_name', 'bio']
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -21,7 +24,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['id', 'name', 'image', 'overview', 'features', 'format', 'author', 'reviews']
+        fields = ['id', 'title', 'image', 'overview', 'features', 'format', 'author', 'reviews']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -31,3 +34,18 @@ class BookSerializer(serializers.ModelSerializer):
         representation['average_rating'] = instance.reviews.aggregate(Avg('stars'))['stars__avg'] or 0
 
         return representation
+
+
+
+class BookDetailModelSerializer(ModelSerializer):
+    class Meta:
+        model = Book
+        exclude = ()
+
+
+class BookListModelSerializer(ModelSerializer):
+    author = AuthorModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Book
+        fields = ('title', 'slug', 'author', 'image')

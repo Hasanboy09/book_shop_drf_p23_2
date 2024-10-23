@@ -46,15 +46,16 @@ class Address(Model):
     phone_number = CharField(max_length=50)
     user = ForeignKey('users.User', CASCADE, related_name='addresses')
 
+    def __str__(self):
+        return f"{self.first_name} - {self.last_name}"
+
 
 class Country(Model):
     name = CharField(max_length=255)
     code = CharField(max_length=255)
 
-
     def __str__(self):
         return self.name
-
 
 
 # ==============================================================================
@@ -78,6 +79,7 @@ class LoginAttempt(Model):
         self.save()
 
     def is_blocked(self):
-        if self.blocked_until and self.blocked_until > timezone.now():
-            return True
-        return False
+        return self.blocked_until and self.blocked_until > timezone.now()
+        # if self.blocked_until and self.blocked_until > timezone.now():
+        #     return True
+        # return False

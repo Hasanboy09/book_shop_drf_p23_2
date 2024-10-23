@@ -1,9 +1,11 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import CharField, CASCADE, TextField, ImageField, Model, ForeignKey, JSONField, IntegerField, \
-    TextChoices, PositiveSmallIntegerField
+from django.db.models import CharField, CASCADE, TextField, ImageField, Model, ForeignKey, IntegerField, \
+    TextChoices, PositiveSmallIntegerField, DecimalField
+from django.utils.text import slugify
+from django_jsonform.models.fields import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 
-from shared.models import TimeBasedModel
+from shared.models import TimeBasedModel, SlugTimeBasedModel
 
 
 class Section(TimeBasedModel):
@@ -17,26 +19,97 @@ class Category(MPTTModel):
     parent = TreeForeignKey('self', CASCADE, null=True, blank=True, related_name='subcategories')
     section = ForeignKey('shops.Section', CASCADE, null=True, blank=True, related_name='categories')
 
+    def __str__(self):
+        return f"{self.id} - {self.name}"
+
     class MPTTMeta:
         order_insertion_by = ['name']
 
 
-class Book(TimeBasedModel):
+class Book(SlugTimeBasedModel):
     class Format(TextChoices):
         HARDCOVER = 'Hardcover', 'hardcover'
         PAPERBACK = 'Paperback', 'paperback'
 
-    name = CharField(max_length=250)
+    SCHEMA = {
+        'type': 'dict',  # or 'object'
+        'keys': {  # or 'properties'
+            'format': {
+                'type': 'string',
+                'title': 'Format'
+            },
+            'publisher': {
+                'type': 'string',
+                'title': 'Publisher',
+            },
+            'pages': {
+                'type': 'integer',
+                'title': 'Pages',
+                'helpText': '(Optional)'
+            },
+            'dimensions': {
+                'type': 'string',
+                'title': 'Dimensions',
+                'helpText': 'exp. 6.30 x 9.20 x 1.20 inches'
+            },
+            'shipping_weight': {
+                'type': 'number',
+                'title': 'Shipping Weight',
+                'helpText': 'lbs'
+            },
+            'languages': {
+                'type': 'string',
+                'title': 'Language'
+            },
+            'publication_date': {
+                'type': 'string',
+                'title': 'Publication Date'
+            },
+            'isbn_13': {
+                'type': 'integer',
+                'title': 'ISBN-13'
+            },
+            'isbn_10': {
+                'type': 'integer',
+                'title': 'ISBN-10'
+            },
+            'edition': {
+                'type': 'integer',
+                'title': 'Edition',
+                'helpText': '(Optional)'
+            },
+        },
+        'required': ['format', 'languages', 'isbn_13', 'isbn_10', 'shipping_weight', 'dimensions', 'publication_date']
+    }
+    used_good_price = DecimalField(help_text='USD da kiritamiz', max_digits=6, decimal_places=2, blank=True, null=True)
+    new_price = DecimalField(help_text='USD da kiritamiz', max_digits=6, decimal_places=2, blank=True, null=True)
+    ebook_price = DecimalField(help_text='USD da kiritamiz', max_digits=6, decimal_places=2, blank=True, null=True)
+    audiobook_price = DecimalField(help_text='USD da kiritamiz', max_digits=6, decimal_places=2, blank=True, null=True)
     image = ImageField(upload_to='shops/book/image', null=True, blank=True)
     overview = TextField()
-    features = CharField(max_length=250)
+    features = JSONField(schema=SCHEMA)
     format = CharField(max_length=10, choices=Format.choices, default=Format.HARDCOVER)
     author = ForeignKey('shops.Author', CASCADE)
+    category = ForeignKey('shops.Category', CASCADE, related_name='books')
+
+    def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.slug = f"{slugify(self.title)}-{self.features['isbn_13']}"
+
+        super().save(*args, force_insert=force_insert, force_update=force_update, using=using,
+                     update_fields=update_fields)
 
 
 class Author(Model):
-    name = CharField(max_length=250)
+    first_name = CharField(max_length=250)
+    last_name = CharField(max_length=250)
     bio = TextField()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Review(TimeBasedModel):
