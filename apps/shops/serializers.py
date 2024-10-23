@@ -2,8 +2,9 @@ from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
+from shops.models import Author, Review, Book
 from users.serializers import AuthorModelSerializer
-from .models import Book, Author, Review
+
 
 
 class AuthorSerializer(serializers.ModelSerializer):
