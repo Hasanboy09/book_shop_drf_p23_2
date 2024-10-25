@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from os.path import join
 from pathlib import Path
-from dotenv import  load_dotenv
+from dotenv import load_dotenv
+
 load_dotenv()
 import sys
 
@@ -98,14 +99,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
 # backends.py
 AUTHENTICATION_BACKENDS = [
     'users.backend.CustomEmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
 
 LANGUAGE_CODE = 'en-us'
 

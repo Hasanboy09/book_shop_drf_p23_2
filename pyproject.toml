@@ -19,6 +19,7 @@ python-dotenv = "^1.0.1"
 faker = "^30.6.0"
 requests = "^2.32.3"
 django-jsonform = "^2.23.1"
+psycopg2-binary = "^2.9.10"
 
 
 [build-system]

@@ -172,17 +172,27 @@ class Command(BaseCommand):
     def _book(self):
         return Book(
             # slug=self.f.slug(),
-            name=self.f.name(),
-            overview=self.f.paragraph(),
-            features=self.f.json(),
-            image=self.f.image_url(),
-            format=self.f.random_element(elements=[Book.Format.HARDCOVER, Book.Format.PAPERBACK]),
-            new_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
+            title=self.f.name(),
             used_good_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
+            new_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
             ebook_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
             audiobook_price=self.f.pydecimal(left_digits=4, right_digits=2, positive=True),
-            reviews_count=self.f.random_int(min=0, max=100),
-            author_id=Author.objects.order_by('?').values_list('id', flat=True).first(),
+            image=self.f.image_url(),
+            overview=self.f.paragraph(),
+            features={
+                "format": self.f.random_element(elements=["Paperback", "Hardcover"]),
+                "publisher": self.f.company(),
+                "pages": self.f.random_int(min=50, max=1000),
+                "dimensions": f"{self.f.random_number(digits=2)} x {self.f.random_number(digits=2)} x {self.f.random_number(digits=2)} inches",
+                "shipping_weight": round(self.f.pyfloat(left_digits=1, right_digits=2, positive=True), 2),
+                "languages": self.f.language_name(),
+                "publication_date": self.f.date(),
+                "isbn_13": self.f.isbn13(separator=""),
+                "isbn_10": self.f.isbn10(separator=""),
+                "edition": self.f.random_int(min=1, max=10),
+            },
+            format=self.f.random_element(elements=[Book.Format.HARDCOVER, Book.Format.PAPERBACK]),
+            category_id=Category.objects.order_by('?').values_list('id', flat=True).first(),
         )
 
     def _user(self):
@@ -235,8 +245,9 @@ class Command(BaseCommand):
 
     def _author(self):
         return Author(
-            name=self.f.name(),
-            bio=self.f.text()
+            first_name=self.f.first_name(),
+            last_name=self.f.last_name(),
+            bio=self.f.text(),
         )
 
     def _category(self):
@@ -250,7 +261,13 @@ class Command(BaseCommand):
         )
 
     def _generate_object(self, cls, name, count=0):
-        cls.objects.bulk_create([getattr(self, f'_{name}')() for _ in range(count)])
+        if name == 'book':
+            for _ in range(count):
+                book = self._book()
+                book.save()
+                book.author.set([Author.objects.order_by('?').first()])
+        else:
+            cls.objects.bulk_create([getattr(self, f'_{name}')() for _ in range(count)])
         self.stdout.write(self.style.SUCCESS(f"{cls.__name__} malumotlari {count} tadan qo'shildi"))
 
     def handle(self, *args, **options):

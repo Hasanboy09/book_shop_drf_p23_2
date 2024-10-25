@@ -36,18 +36,16 @@ class AuthorSerializer(serializers.ModelSerializer):
 #     return representation
 
 
-class BookListModelSerializer(ModelSerializer):
-    author = AuthorModelSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Book
-        fields = ('title', 'slug', 'author', 'image')
-
-
 class AuthorDetailModelSerializer(ModelSerializer):
     class Meta:
         model = Author
-        fields = '__all__'
+        exclude = ()
+
+
+class AuthorListModelSerializer(ModelSerializer):
+    class Meta:
+        model = Author
+        exclude = ()
 
 
 class BookDetailModelSerializer(ModelSerializer):
@@ -55,12 +53,18 @@ class BookDetailModelSerializer(ModelSerializer):
 
     class Meta:
         model = Book
-        fields = (
-            'title', 'slug', 'author', 'image', 'overview', 'used_good_price', 'ebook_price', 'audiobook_price',
-            'new_price', 'features')
+        exclude = ()
 
 
 class BookUpdateDestroyModelSerializer(ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__'
+
+
+class BookListModelSerializer(ModelSerializer):
+    author = AuthorModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Book
+        fields = ('id', 'title', 'slug', 'author', 'image')

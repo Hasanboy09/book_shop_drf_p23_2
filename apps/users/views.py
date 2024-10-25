@@ -1,6 +1,7 @@
 from time import time
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.db.models import Case, When, BooleanField, F
 from django.utils.http import urlsafe_base64_decode
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, mixins
@@ -108,7 +109,23 @@ class AddressListCreateAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(user=self.request.user).order_by('address')  # alifbo sort
+        user = self.request.user
+        return (
+            qs.filter(user=user)
+            .annotate(
+                shipping_address_id=Case(
+                    When(user__shipping_address_id=F('id'), then=False),
+                    default=True,
+                    output_field=BooleanField()
+                ),
+                billing_address_id=Case(
+                    When(user__billing_address_id=F('id'), then=False),
+                    default=True,
+                    output_field=BooleanField()
+                ),
+            )
+            .order_by('shipping_address_id', 'billing_address_id', 'first_name', 'last_name')
+        )
 
 
 @extend_schema(tags=['shops'])
@@ -146,4 +163,3 @@ class UserWishlistCreateAPIViewDestroyAPIView(CreateAPIView, DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserWishlist
     permission_classes = IsAuthenticated,
-
