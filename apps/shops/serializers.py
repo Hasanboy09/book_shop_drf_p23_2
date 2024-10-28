@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
+from shared.utils import get_dollar_currency
 from shops.models import Author, Book
 from users.serializers import AuthorModelSerializer
 
@@ -56,15 +58,33 @@ class BookUpdateDestroyModelSerializer(ModelSerializer):
 
 class BookListModelSerializer(ModelSerializer):
     author = AuthorModelSerializer(many=True, read_only=True)
+    price_in_currency = SerializerMethodField()
 
     class Meta:
         model = Book
-        fields = ('id', 'title', 'slug', 'author', 'image')
+        fields = ('id', 'title', 'slug', 'author', 'image', 'price_in_currency')
+
+    def get_price_in_currency(self, obj):
+        # Xuddi `BookDetailModelSerializer` dagi kabi valyutani qaytaradi # noqa
+        return BookDetailModelSerializer.get_price_in_currency(self, obj)
 
 
 class BookDetailModelSerializer(ModelSerializer):
     author = AuthorDetailModelSerializer(many=True, read_only=True)
+    price_in_currency = SerializerMethodField()
 
     class Meta:
         model = Book
         exclude = ()
+
+    def get_price_in_currency(self, obj):
+        usd_rate, success = get_dollar_currency()  # utils.py
+        if not success or not usd_rate:
+            return obj.used_good_price
+        user = self.context['request'].user
+        if user.is_authenticated and hasattr(user, 'currency') and user.currency:
+            if user.currency == "USD":
+                return obj.used_good_price
+            else:
+                return obj.used_good_price * usd_rate
+        return obj.used_good_price

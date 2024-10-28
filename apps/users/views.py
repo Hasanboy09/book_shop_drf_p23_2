@@ -29,22 +29,35 @@ class UserUpdateAPIView(UpdateAPIView):
         return self.request.user
 
 
-@extend_schema(tags=['auth'])
-class RegisterCreateAPIView(CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterUserModelSerializer
+# @extend_schema(tags=['auth'])
+# class RegisterCreateAPIView(CreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = RegisterUserModelSerializer
+#     authentication_classes = ()
+#
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         response = {
+#             'message': 'Successfully registered!'
+#         }
+#         activation_service = ActivationEmailService(user, request._current_scheme_host)
+#         activation_service.send_activation_email()
+#         return Response(response, status.HTTP_201_CREATED)
+
+@extend_schema(tags=['test'])
+class RegisterCreateAPIView(APIView):
     authentication_classes = ()
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        response = {
-            'message': 'Successfully registered!'
-        }
+    def get(self, request, *args, **kwargs):
+        user = User.objects.first()
         activation_service = ActivationEmailService(user, request._current_scheme_host)
-        activation_service.send_activation_email()
-        return Response(response, status.HTTP_201_CREATED)
+        email = request.GET.get('email')
+        if email:
+            task = activation_service.send_activation_email(email, priority=request.GET.get('high', None))
+            return Response({"task_id": task.id})
+        return Response({"msg": "email yuborish kk"})
 
 
 @extend_schema(tags=['auth'])
