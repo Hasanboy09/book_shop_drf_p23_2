@@ -23,7 +23,7 @@ class Category(MPTTModel):
         return f"{self.id} - {self.name}"
 
     class MPTTMeta:
-        order_insertion_by = ['name']
+        order_insertion_by = ['name'] # sort by alfabit
 
 
 class Book(SlugTimeBasedModel):

@@ -12,8 +12,8 @@ class CategoryModelAdmin(DraggableMPTTAdmin):
 
 @admin.register(Book)
 class BookModelAdmin(ModelAdmin):
-    list_display = ['slug', 'title']
-    autocomplete_fields = ['author']
+    list_display = ['slug', 'title'] # admin panel da books for showing slug and title
+    autocomplete_fields = ['author'] # for many to many reference
 
 
 @admin.register(Section)

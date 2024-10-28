@@ -48,14 +48,6 @@ class AuthorListModelSerializer(ModelSerializer):
         exclude = ()
 
 
-class BookDetailModelSerializer(ModelSerializer):
-    author = AuthorDetailModelSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Book
-        exclude = ()
-
-
 class BookUpdateDestroyModelSerializer(ModelSerializer):
     class Meta:
         model = Book
@@ -68,3 +60,11 @@ class BookListModelSerializer(ModelSerializer):
     class Meta:
         model = Book
         fields = ('id', 'title', 'slug', 'author', 'image')
+
+
+class BookDetailModelSerializer(ModelSerializer):
+    author = AuthorDetailModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Book
+        exclude = ()

@@ -40,9 +40,3 @@ class AuthorDetailRetrieveAPIView(RetrieveAPIView):
     serializer_class = AuthorDetailModelSerializer
     lookup_field = 'id'
 
-
-# @extend_schema(tags=['author'])
-# class AuthorListAPIView(ListAPIView):
-#     queryset = Author.objects.all()
-#     serializer_class = AuthorListModelSerializer
-#     pagination_class = CustomPageNumberPagination
