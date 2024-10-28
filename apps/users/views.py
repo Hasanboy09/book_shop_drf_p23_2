@@ -58,6 +58,10 @@ class RegisterCreateAPIView(APIView):
             task = activation_service.send_activation_email(email, priority=request.GET.get('high', None))
             return Response({"task_id": task.id})
         return Response({"msg": "email yuborish kk"})
+#     http://localhost:8002/api/v1/users/register?email=sanoqulovhasan113@gmail.com&high=high
+# make file dan celery_is_premium ni alohida alohida terminalda ishlatish kerak
+
+
 
 
 @extend_schema(tags=['auth'])
