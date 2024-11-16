@@ -4,7 +4,7 @@ from django.db.models import CharField, CASCADE, TextField, ImageField, Model, F
 from django.utils.text import slugify
 from django_jsonform.models.fields import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
-
+from django.db import models
 from shared.models import TimeBasedModel, SlugTimeBasedModel
 
 
